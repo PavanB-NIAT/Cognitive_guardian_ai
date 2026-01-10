@@ -1,0 +1,32 @@
+/* Main Background */
+.stApp {
+    background-color: #0e1117;
+    color: #ffffff;
+}
+
+/* Chat Input Styling */
+.stChatInput {
+    position: fixed;
+    bottom: 20px;
+    border-radius: 20px;
+}
+
+/* Sidebar Styling */
+[data-testid="stSidebar"] {
+    background-color: #161b22;
+    border-right: 1px solid #30363d;
+}
+
+/* Guardian Avatar */
+.guardian-avatar {
+    font-size: 24px;
+    background: linear-gradient(45deg, #FF4B4B, #FF914D);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: bold;
+}
+
+/* Thinking Progress Bar */
+.stProgress > div > div > div > div {
+    background-image: linear-gradient(to right, #4caf50, #8bc34a);
+}
