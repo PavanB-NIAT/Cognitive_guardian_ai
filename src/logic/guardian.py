@@ -1,31 +1,58 @@
-from src.services.llm_connector import GeminiConnector
-from src.logic.profiles import UserProfile
-from src.logic.safety import SafetyModule
+# logic/guardian_brain.py
+import streamlit as st
+import google.generativeai as genai
 
-class CognitiveGuardian:
+class GuardianBrain:
     def __init__(self):
-        self.llm = GeminiConnector()
-        self.safety = SafetyModule()
+        # 1. Fail-safe Authentication
+        try:
+            api_key = st.secrets["GOOGLE_API_KEY"]
+            genai.configure(api_key=api_key)
+            self.model = genai.GenerativeModel('gemini-pro')
+        except Exception:
+            self.model = None
 
-    def process_interaction(self, user_input, profile: UserProfile, chat_history):
-        # 1. Safety Check
-        is_safe, warning = self.safety.check_input(user_input)
-        if not is_safe:
-            yield warning
-            return
+    def generate_response(self, user_input, history, age, role, style):
+        if not self.model:
+            return "⚠️ System Error: API Key missing. Please check .streamlit/secrets.toml"
 
-        # 2. Construct Socratic System Prompt
-        system_prompt = profile.get_system_persona()
+        # 2. The "Two-Step" Persona Engine
+        system_prompt = self._construct_persona(age, role, style)
         
-        # 3. Add pedagogical constraints
-        system_prompt += "\n\nCRITICAL RULE: Do not explain the concept yet. Ask the user to try to define it first based on their own knowledge."
+        try:
+            # 3. Stateless Execution (Faster for Demos)
+            full_prompt = f"{system_prompt}\n\n[USER SAYS]: {user_input}"
+            response = self.model.generate_content(full_prompt)
+            return response.text
+        except Exception as e:
+            return f"⚠️ Cognitive Connection Error: {str(e)}"
 
-        # 4. Stream response from LLM
-        response_stream = self.llm.generate_stream(
-            system_instruction=system_prompt,
-            user_message=user_input,
-            history=chat_history
-        )
+    def _construct_persona(self, age, role, style):
+        """
+        Dynamically adjusts the AI's teaching strategy.
+        """
+        # TONE & METAPHOR SELECTION
+        if "Child" in role or age < 12:
+            tone = "Use emojis 🌟. Be super friendly. Use analogies like Lego, Minecraft, or Pizza."
+        elif "Developer" in role:
+            tone = "Be strictly technical. Use code blocks. No small talk."
+        else:
+            tone = "Professional, clear, and Socratic (like a mentor)."
+
+        # THE TWO-STEP INSTRUCTION
+        return f"""
+        You are 'Cognitive Guardian'.
+        USER PROFILE: Age {age} | Role: {role} | Style: {style}
         
-        for chunk in response_stream:
-            yield chunk
+        YOUR STRICT BEHAVIOR PROTOCOL:
+        
+        STEP 1: THE SCAFFOLD (If the user asks a new question)
+        - Do NOT give the direct answer immediately.
+        - Explain the concept simply using your tone ({tone}).
+        - Ask ONE short, fun guiding question to make them think.
+        
+        STEP 2: THE REVEAL (If the user tries to answer or asks again)
+        - If the user answers your question (even wrongly), PRAISE them.
+        - Then give the CLEAR, FINAL answer.
+        - Don't trap them in a loop. Guide -> Then Solve.
+        """
