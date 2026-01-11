@@ -1,32 +1,73 @@
-/* Main Background */
+/* assets/chatgpt.css */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+/* --- MAIN CONTAINER & COLORS --- */
 .stApp {
-    background-color: #0e1117;
-    color: #ffffff;
+    background-color: #343541; /* ChatGPT Main Grey */
+    font-family: 'Inter', sans-serif;
 }
 
-/* Chat Input Styling */
+section[data-testid="stSidebar"] {
+    background-color: #202123; /* ChatGPT Sidebar Dark */
+    border-right: 1px solid #4d4d4f;
+}
+
+/* --- HIDE STREAMLIT BRANDING --- */
+header, footer {visibility: hidden;}
+.stDeployButton {display: none;}
+div[data-testid="stToolbar"] {display: none;} /* Hides the top right menu options */
+
+/* --- CHAT MESSAGE STYLING --- */
+div[data-testid="stChatMessage"] {
+    background-color: transparent;
+    border: none;
+    padding: 1.5rem 0; /* Vertical spacing */
+    width: 100%;
+    margin: 0;
+}
+
+/* User Message - Blends with background */
+div[data-testid="stChatMessage"][data-testid="user"] {
+    background-color: #343541; 
+}
+
+/* AI Message - Lighter Block */
+div[data-testid="stChatMessage"][data-testid="assistant"] {
+    background-color: #444654; 
+    border-top: 1px solid #2A2B32;
+    border-bottom: 1px solid #2A2B32;
+}
+
+/* Avatar Fix */
+div[data-testid="stChatMessageAvatarBackground"] {
+    border-radius: 2px;
+}
+
+/* --- FLOATING INPUT BAR --- */
 .stChatInput {
-    position: fixed;
-    bottom: 20px;
-    border-radius: 20px;
+    padding-bottom: 30px;
 }
 
-/* Sidebar Styling */
-[data-testid="stSidebar"] {
-    background-color: #161b22;
-    border-right: 1px solid #30363d;
+div[data-testid="stChatInput"] {
+    background-color: #40414F;
+    border-radius: 12px;
+    border: 1px solid #565869;
+    color: white;
+    box-shadow: 0 0 20px rgba(0,0,0,0.3);
 }
 
-/* Guardian Avatar */
-.guardian-avatar {
-    font-size: 24px;
-    background: linear-gradient(45deg, #FF4B4B, #FF914D);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    font-weight: bold;
+/* --- TEXT STYLING --- */
+p, li {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #ECECF1; /* Soft White */
 }
 
-/* Thinking Progress Bar */
-.stProgress > div > div > div > div {
-    background-image: linear-gradient(to right, #4caf50, #8bc34a);
+/* --- POPUP / MODAL FORM --- */
+div[data-testid="stForm"] {
+    background-color: #202123;
+    border: 1px solid #565869;
+    border-radius: 8px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
 }
